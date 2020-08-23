@@ -1,0 +1,4 @@
+---
+# defaults file for ansible-role-bitping
+bitping_directory: /opt/bitping
+bitping_url: https://downloads.bitping.com/node/linux

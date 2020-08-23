@@ -1,0 +1,22 @@
+---
+- name: Install apt dependencies
+  apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    update_cache: true
+    allow-unauthenticated: true
+  loop:
+    - name: unzip
+      state: latest
+
+- name: Make sure destination directory exists
+  file:
+    path: "{{ bitping_directory }}"
+    state: directory
+    recurse: true
+
+- name: Download Bitping from {{ bitping_url }} and unarchive it at {{ bitping_directory }}
+  unarchive:
+    src: "{{ bitping_url }}"
+    dest: "{{ bitping_directory }}"
+    remote_src: true
