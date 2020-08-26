@@ -1,0 +1,12 @@
+---
+extends: default
+# extends: relaxed
+
+rules:
+  line-length: disable
+  truthy: disable
+  comments: disable
+  comments-indentation: disable
+  braces:
+    level: warning
+    max-spaces-inside: 1
