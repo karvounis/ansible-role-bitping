@@ -4,10 +4,23 @@
     name: "{{ item.name }}"
     state: "{{ item.state }}"
     update_cache: true
-    allow-unauthenticated: true
+    cache_valid_time: 86400
   loop:
     - name: unzip
       state: latest
+
+- name: Ensure group "{{ bitping_group }}" exists
+  group:
+    name: "{{ bitping_group }}"
+    state: present
+
+- name: Ensure user "{{ bitping_user }}" exists
+  user:
+    name: "{{ bitping_user }}"
+    group: "{{ bitping_group }}"
+    create_home: true
+    state: present
+    shell: /bin/bash
 
 - name: Make sure destination directories exist
   file:
@@ -15,24 +28,20 @@
     state: directory
     recurse: true
   loop:
-    - /root/.bitping/
+    - "{{ bitping_user_home }}"
     - "{{ bitping_directory }}"
 
-- name: Download Bitping from {{ bitping_download_url }} and unarchive it at {{ bitping_directory }}
+- name: Download Bitping from "{{ bitping_download_url }}" and unarchive it at "{{ bitping_directory }}"
   unarchive:
     src: "{{ bitping_download_url }}"
     dest: "{{ bitping_directory }}"
     remote_src: true
 
-#TODO: Create user bitping?
-
-#TODO: If the credentials file is there and the token is not empty,
-
 - name: Figuring out whether all the credentials are properly set. If one of them is not, it is essential that the token be fetched from the login API
   set_fact:
     bitping_rest_login_required: "{{ not bitping_credentials_email or not bitping_credentials_password or not bitping_credentials_id or not bitping_credentials_name or not bitping_credentials_token }}"
 
-- name: Get JWT token from {{ bitping_login_url }} URL
+- name: Get JWT token from "{{ bitping_login_url }}"
   uri:
     url: "{{ bitping_login_url }}"
     method: POST
@@ -58,6 +67,8 @@
   template:
     src: credentials.json.j2
     dest: "{{ bitping_credentials_file_path }}"
+    owner: "{{ bitping_user }}"
+    group: "{{ bitping_group }}"
     mode: '0644'
   no_log: true
 
