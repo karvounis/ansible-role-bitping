@@ -9,12 +9,12 @@
     - name: unzip
       state: latest
 
-- name: Ensure group "{{ bitping_group }}" exists
+- name: "Ensure group '{{ bitping_group }}' exists"
   group:
     name: "{{ bitping_group }}"
     state: present
 
-- name: Ensure user "{{ bitping_user }}" exists
+- name: "Ensure user '{{ bitping_user }}' exists"
   user:
     name: "{{ bitping_user }}"
     group: "{{ bitping_group }}"
@@ -22,7 +22,7 @@
     state: present
     shell: /bin/bash
 
-- name: Make sure destination directories exist
+- name: "Make sure directories exist"
   file:
     path: "{{ item }}"
     state: directory
@@ -31,17 +31,17 @@
     - "{{ bitping_user_home }}"
     - "{{ bitping_directory }}"
 
-- name: Download Bitping from "{{ bitping_download_url }}" and unarchive it at "{{ bitping_directory }}"
+- name: "Download Bitping from '{{ bitping_download_url }}' and unarchive it at '{{ bitping_directory }}'"
   unarchive:
     src: "{{ bitping_download_url }}"
     dest: "{{ bitping_directory }}"
     remote_src: true
 
-- name: Figuring out whether all the credentials are properly set. If one of them is not, it is essential that the token be fetched from the login API
+- name: "Figuring out whether all the credentials are properly set. If one of them is not, it is essential that the token be fetched from the login API"
   set_fact:
     bitping_rest_login_required: "{{ not bitping_credentials_email or not bitping_credentials_password or not bitping_credentials_id or not bitping_credentials_name or not bitping_credentials_token }}"
 
-- name: Get JWT token from "{{ bitping_login_url }}"
+- name: "Get JWT token from '{{ bitping_login_url }}'"
   uri:
     url: "{{ bitping_login_url }}"
     method: POST
@@ -54,7 +54,7 @@
   register: login_response
   when: bitping_rest_login_required is true
 
-- name: Set facts based on the login response
+- name: "Set facts based on the login response"
   set_fact:
     bitping_credentials_id: "{{login_response.json.id}}"
     bitping_credentials_name: "{{login_response.json.name}}"
@@ -63,7 +63,7 @@
   no_log: true
   when: bitping_rest_login_required is true
 
-- name: Create the credentials file
+- name: "Create the credentials file at '{{ bitping_credentials_file_path }}'"
   template:
     src: credentials.json.j2
     dest: "{{ bitping_credentials_file_path }}"
