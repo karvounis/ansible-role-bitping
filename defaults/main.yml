@@ -6,9 +6,10 @@ bitping_login_url: "{{ bitping_api_url }}/users/login"
 
 bitping_user: "bitping"
 bitping_group: "bitping"
-bitping_user_home: "/home/bitping/.bitping"
+bitping_user_home: "/home/bitping"
 
-bitping_credentials_file_path: "{{ bitping_user_home }}/credentials.json"
+bitping_credentials_file_path: "{{ bitping_user_home }}/.bitping/credentials.json"
+bitping_systemd_file_path: "/lib/systemd/system/bitping.service"
 
 # If any of the 5 next variables is empty, the role makes a call to the login API to fill these variables properly.
 # In order for the call to the login API to be successful, bitping_credentials_email and bitping_credentials_password must both be set.
