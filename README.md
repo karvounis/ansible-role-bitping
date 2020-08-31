@@ -19,6 +19,8 @@ Available variables are listed below, along with default values (see [defaults/m
 
 If any of the 5 next variables is empty, the role makes a call to the login API to fill these variables properly.
 In order for the call to the Bitping login API to be successful, `bitping_credentials_email` and `bitping_credentials_password` must both be set!
+No matter how many hosts you run this role against, the call to the Login API will only happen once.
+
 If all of them are set, then the `credentials.json` ([credentials.json template](templates/credentials.json.j2)) file will be generated from the set values without making a request to the Bitping login API.
 
 ```yaml
