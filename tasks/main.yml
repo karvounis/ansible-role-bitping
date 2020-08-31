@@ -1,38 +1,53 @@
 ---
-- name: Install apt dependencies
-  apt:
+- name: "Install package dependencies"
+  become: true
+  package:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
-    update_cache: true
-    allow-unauthenticated: true
   loop:
     - name: unzip
       state: latest
 
-- name: Make sure destination directories exist
+- name: "Ensure group '{{ bitping_group }}' exists"
+  become: true
+  group:
+    name: "{{ bitping_group }}"
+    state: present
+
+- name: "Ensure user '{{ bitping_user }}' exists"
+  become: true
+  user:
+    name: "{{ bitping_user }}"
+    group: "{{ bitping_group }}"
+    create_home: true
+    home: "{{ bitping_user_home }}"
+    state: present
+    shell: /bin/bash
+
+- name: "Encure directories exist"
+  become: true
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     recurse: true
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
   loop:
-    - /root/.bitping/
-    - "{{ bitping_directory }}"
+    - { path: "{{ bitping_user_home }}/.bitping", owner: "{{ bitping_user }}", group: "{{ bitping_group }}" }
+    - { path: "{{ bitping_directory }}" }
 
-- name: Download Bitping from {{ bitping_download_url }} and unarchive it at {{ bitping_directory }}
+- name: "Download Bitping from '{{ bitping_download_url }}' and unarchive it at '{{ bitping_directory }}'"
+  become: true
   unarchive:
     src: "{{ bitping_download_url }}"
     dest: "{{ bitping_directory }}"
     remote_src: true
 
-#TODO: Create user bitping?
-
-#TODO: If the credentials file is there and the token is not empty,
-
-- name: Figuring out whether all the credentials are properly set. If one of them is not, it is essential that the token be fetched from the login API
+- name: "Figure out whether all the login credentials are properly set. If one of them is not, it is essential that the token be fetched from the login API"
   set_fact:
     bitping_rest_login_required: "{{ not bitping_credentials_email or not bitping_credentials_password or not bitping_credentials_id or not bitping_credentials_name or not bitping_credentials_token }}"
 
-- name: Get JWT token from {{ bitping_login_url }} URL
+- name: "Get JWT token from '{{ bitping_login_url }}'"
   uri:
     url: "{{ bitping_login_url }}"
     method: POST
@@ -45,7 +60,7 @@
   register: login_response
   when: bitping_rest_login_required is true
 
-- name: Set facts based on the login response
+- name: "Set facts based on the login response"
   set_fact:
     bitping_credentials_id: "{{login_response.json.id}}"
     bitping_credentials_name: "{{login_response.json.name}}"
@@ -54,13 +69,31 @@
   no_log: true
   when: bitping_rest_login_required is true
 
-- name: Create the credentials file
+- name: "Create the credentials file at '{{ bitping_credentials_file_path }}'"
+  become: true
   template:
     src: credentials.json.j2
     dest: "{{ bitping_credentials_file_path }}"
+    owner: "{{ bitping_user }}"
+    group: "{{ bitping_group }}"
     mode: '0644'
   no_log: true
+  notify: Restart bitping
 
-#TODO: Create the systemd file to restart bitping
+- name: "Modify systemd config file at '{{ bitping_systemd_file_path }}'"
+  become: true
+  template:
+    src: "systemd.j2"
+    dest: "{{ bitping_systemd_file_path }}"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+  notify: Restart bitping
 
-#TODO: Make sure bitping service is enabled and up and running
+- name: "Make sure bitping service is enabled and up and running"
+  become: true
+  systemd:
+    name: bitping
+    state: started
+    enabled: yes
+    daemon_reload: yes

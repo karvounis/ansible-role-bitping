@@ -1,15 +1,20 @@
 ---
-bitping_directory: "/opt/bitping"
-bitping_download_url: "https://downloads.bitping.com/node/linux"
-bitping_api_url: "https://api.bitping.com"
-bitping_login_url: "{{ bitping_api_url }}/users/login"
-
-bitping_credentials_file_path: "/root/.bitping/credentials.json"
-
 # If any of the 5 next variables is empty, the role makes a call to the login API to fill these variables properly.
 # In order for the call to the login API to be successful, bitping_credentials_email and bitping_credentials_password must both be set.
 bitping_credentials_email: "changeme@protonmail.com"
 bitping_credentials_password: "cHAngem3!123"
 bitping_credentials_id: ""
-bitping_credentials_name: "ppp"
+bitping_credentials_name: ""
 bitping_credentials_token: ""
+
+bitping_user: "bitping"
+bitping_group: "bitping"
+bitping_user_home: "/home/bitping"
+
+bitping_directory: "/opt/bitping"
+bitping_credentials_file_path: "{{ bitping_user_home }}/.bitping/credentials.json"
+bitping_systemd_file_path: "/etc/systemd/system/bitping.service"
+
+bitping_download_url: "https://downloads.bitping.com/node/linux"
+bitping_api_url: "https://api.bitping.com"
+bitping_login_url: "{{ bitping_api_url }}/users/login"

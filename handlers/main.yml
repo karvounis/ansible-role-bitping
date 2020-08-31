@@ -1,5 +1,7 @@
 ---
 - name: "Restart bitping"
-  service:
+  become: true
+  systemd:
     name: bitping
     state: restarted
+    daemon_reload: yes

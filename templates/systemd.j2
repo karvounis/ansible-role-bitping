@@ -1,0 +1,18 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Bitping
+After=network.target
+
+[Service]
+User={{ bitping_user }}
+Group={{ bitping_group }}
+WorkingDirectory={{ bitping_user_home }}
+ExecStart={{ bitping_directory }}/release/bitping-node-amd64-linux -server
+Restart=always
+RestartSec=5
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
