@@ -9,6 +9,7 @@ It has being tested in:
 - Ubuntu 16.04
 - Debian 10
 - Debian 9
+- Amazon Linux 2 AMI (HVM)
 
 Role Variables
 --------------
