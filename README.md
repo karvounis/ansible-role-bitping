@@ -89,3 +89,5 @@ Author Information
 ------------------
 
 Role was created in 2020 by Evangelos Karvounis.
+
+If you think this role was useful, please send me a tip at `karv@moneybutton.com`.
