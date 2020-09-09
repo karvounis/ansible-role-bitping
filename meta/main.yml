@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: bitping
+  author: Evangelos Karvounis
+  description: Installs and configures Bitping on a Linux instance
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - xenial
+        - bionic
+    - name: Debian
+      versions:
+        - 10
+        - 9
+  galaxy_tags:
+    - bitping
+    - bsv
+    - bitcoin
+    - development
+    - crypto
+    - cryptocurrency
+    - systemd
