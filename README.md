@@ -9,6 +9,8 @@ It has being tested in:
 - Ubuntu 16.04
 - Debian 10
 - Debian 9
+- Debian 8
+- Centos 7
 - Amazon Linux 2 AMI (HVM)
 
 Role Variables
@@ -79,6 +81,31 @@ Example Playbook
   roles:
      - role: ansible-role-bitping
 ```
+
+Molecule testing
+---
+
+Role is using molecule to perform testing https://molecule.readthedocs.io/en/latest/
+
+#### Example
+
+```
+MOLECULE_BITPING_EMAIL=email MOLECULE_BITPING_PASSWORD=password MOLECULE_DISTRO=ubuntu1804 molecule test
+```
+
+There are three environmental variables that you need to specify:
+* MOLECULE_BITPING_EMAIL: a valid Bitping email
+* MOLECULE_BITPING_PASSWORD: a valid Bitping password
+* MOLECULE_DISTRO: Distribution to run the tests against. Valid values:
+    * ubuntu1804
+    * ubuntu1604
+    * ubuntu1404
+    * centos7
+    * centos6
+    * debian9
+    * debian8
+    * fedora29
+    * fedora27
 
 License
 -------

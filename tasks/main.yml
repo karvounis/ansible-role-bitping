@@ -32,9 +32,10 @@
     recurse: true
     owner: "{{ item.owner | default('root') }}"
     group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode }}"
   loop:
-    - { path: "{{ bitping_user_home }}/.bitping", owner: "{{ bitping_user }}", group: "{{ bitping_group }}" }
-    - { path: "{{ bitping_directory }}" }
+    - { path: "{{ bitping_user_home }}/.bitping", owner: "{{ bitping_user }}", group: "{{ bitping_group }}", mode: "1770" }
+    - { path: "{{ bitping_directory }}", mode: "1755" }
 
 - name: "Download Bitping from '{{ bitping_download_url }}' and unarchive it at '{{ bitping_directory }}'"
   become: true
@@ -45,7 +46,14 @@
 
 - name: "Figure out whether all the login credentials are properly set. If one of them is not, it is essential that the token be fetched from the login API"
   set_fact:
-    bitping_rest_login_required: "{{ not bitping_credentials_email or not bitping_credentials_password or not bitping_credentials_id or not bitping_credentials_name or not bitping_credentials_token }}"
+    bitping_rest_login_required: >-
+      {{
+        not bitping_credentials_email or
+        not bitping_credentials_password or
+        not bitping_credentials_id or
+        not bitping_credentials_name or
+        not bitping_credentials_token
+      }}
 
 - name: "Get JWT token from '{{ bitping_login_url }}'"
   uri:
@@ -58,16 +66,16 @@
   no_log: true
   run_once: true
   register: login_response
-  when: bitping_rest_login_required is true
+  when: bitping_rest_login_required
 
 - name: "Set facts based on the login response"
   set_fact:
-    bitping_credentials_id: "{{login_response.json.id}}"
-    bitping_credentials_name: "{{login_response.json.name}}"
-    bitping_credentials_email: "{{login_response.json.email}}"
-    bitping_credentials_token: "{{login_response.json.token}}"
+    bitping_credentials_id: "{{ login_response.json.id }}"
+    bitping_credentials_name: "{{ login_response.json.name }}"
+    bitping_credentials_email: "{{ login_response.json.email }}"
+    bitping_credentials_token: "{{ login_response.json.token }}"
   no_log: true
-  when: bitping_rest_login_required is true
+  when: bitping_rest_login_required
 
 - name: "Create the credentials file at '{{ bitping_credentials_file_path }}'"
   become: true
