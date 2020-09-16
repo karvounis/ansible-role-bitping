@@ -13,8 +13,11 @@ galaxy_info:
         - bionic
     - name: Debian
       versions:
-        - 10
-        - 9
+        - buster
+        - stretch
+    - name: Centos
+      versions:
+        - 7
   galaxy_tags:
     - bitping
     - bsv

@@ -79,7 +79,7 @@ Example Playbook
     bitping_credentials_email: "your_bitping_email"
     bitping_credentials_password: "your_bitping_password"
   roles:
-     - role: ansible-role-bitping
+     - role: karvounis.bitping
 ```
 
 Molecule testing
