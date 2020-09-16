@@ -15,9 +15,6 @@ galaxy_info:
       versions:
         - buster
         - stretch
-    - name: Centos
-      versions:
-        - 7
   galaxy_tags:
     - bitping
     - bsv
